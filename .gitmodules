@@ -1,0 +1,3 @@
+[submodule "editpackft-multi/code-dedup"]
+	path = editpackft-multi/code-dedup
+	url = git@github.com:cassanof/code-dedup
