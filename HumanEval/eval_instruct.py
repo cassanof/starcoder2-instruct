@@ -1,3 +1,6 @@
+from human_eval.evaluation import evaluate_functional_correctness
+from transformers import AutoTokenizer, AutoModelForCausalLM
+from utils.utils import extract_generation_code, languge_settings
 import argparse
 import json
 import os
@@ -7,11 +10,8 @@ from tqdm import tqdm
 
 data_abs_dir = Path(__file__).parent / "data"
 
-from utils.utils import extract_generation_code, languge_settings
-from transformers import AutoTokenizer, AutoModelForCausalLM
-from human_eval.evaluation import evaluate_functional_correctness
 
-def build_deepseekcoder_instruction(languge: str, question: str):
+def build_instruction(languge: str, question: str):
     return '''
 Please continue to complete the function. You are not allowed to modify the given code and do the completion only. Please return all completed function in a codeblock. Here is the given code to do completion:
 ```{}
@@ -19,31 +19,39 @@ Please continue to complete the function. You are not allowed to modify the give
 ```
 '''.strip().format(languge.lower(), question.strip())
 
-def generate_one(example, lang, tokenizer, model):
-    prompt = build_deepseekcoder_instruction(languge_settings[lang]['full_name'], example['prompt'])
-    inputs = tokenizer.apply_chat_template(
-        [{'role': 'user', 'content': prompt }],
-        return_tensors="pt",
-        add_generation_prompt=True
-    ).to(model.device)
 
-    stop_id = tokenizer.convert_tokens_to_ids("<|EOT|>")
-    assert isinstance(stop_id, int), "Invalid tokenizer, EOT id not found"
+def format_prompt(instruction: str) -> str:
+    instruction_header = "# Instruction"
+    response_header = "# Response"
+    buf = ""
+    buf += instruction_header + "\n"
+    buf += instruction + "\n"
+    buf += response_header + "\n"
+    return buf
+
+
+def generate_one(example, lang, tokenizer, model):
+    instr = build_instruction(
+        languge_settings[lang]['full_name'], example['prompt'])
+    prompt = format_prompt(instr)
+    inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
 
     outputs = model.generate(
-        inputs, 
+        inputs,
         max_new_tokens=1024,
         do_sample=False,
-        # top_p=0.95,
-        # temperature=temperature,
-        pad_token_id=stop_id,
-        eos_token_id=stop_id
+        top_p=0.9,
+        temperature=0.2,
+        pad_token_id=tokenizer.pad_token_id,
+        eos_token_id=tokenizer.eos_token_id,
     )
 
-    output = tokenizer.decode(outputs[0][len(inputs[0]):], skip_special_tokens=True)
+    output = tokenizer.decode(
+        outputs[0][len(inputs[0]):], skip_special_tokens=True)
     example['output'] = output
-    
+
     return extract_generation_code(example, lang_code=lang)
+
 
 def generate_main(args):
     model_name_or_path = args.model
@@ -55,12 +63,13 @@ def generate_main(args):
 
     print("model", model_name_or_path)
     tokenizer = AutoTokenizer.from_pretrained(model_name_or_path)
-    print("load tokenizer {} from {} over.".format(tokenizer.__class__, model_name_or_path))
+    print("load tokenizer {} from {} over.".format(
+        tokenizer.__class__, model_name_or_path))
     model = AutoModelForCausalLM.from_pretrained(
         model_name_or_path,
         torch_dtype=torch.bfloat16,
         device_map="auto",
-        #use_flash_attention_2=True
+        # use_flash_attention_2=True
     )
     model.eval()
     examples = [json.loads(x) for x in open(problem_file) if x.strip()]
@@ -75,8 +84,9 @@ def generate_main(args):
     with open(saved_path, 'w', encoding='utf-8') as fw:
         for ex in generated_examples:
             fw.write(json.dumps(ex) + '\n')
-        print("Save {} processed examples into {} over!".format(len(generated_examples), saved_path))
-    
+        print("Save {} processed examples into {} over!".format(
+            len(generated_examples), saved_path))
+
     result = evaluate_functional_correctness(
         input_file=saved_path,
         tmp_dir=temp_dir,
@@ -88,21 +98,26 @@ def generate_main(args):
     print(lang, result, model_name_or_path)
     pass
 
+
 def evaluation_only(args):
     lang = args.language
     temp_dir = args.temp_dir
-    assert os.path.exists(args.output_path), "Not fond output file: {}".format(args.output_path)
+    assert os.path.exists(
+        args.output_path), "Not fond output file: {}".format(args.output_path)
     os.makedirs(temp_dir, exist_ok=True)
 
     output_name = os.path.basename(args.output_path)
-    output_examples = [json.loads(x) for x in open(args.output_path) if x.strip()]
+    output_examples = [json.loads(x)
+                       for x in open(args.output_path) if x.strip()]
 
-    processed_examples = [extract_generation_code(ex, lang) for ex in tqdm(output_examples, "Processing")]
+    processed_examples = [extract_generation_code(
+        ex, lang) for ex in tqdm(output_examples, "Processing")]
     processed_path = os.path.join(temp_dir, output_name)
     with open(processed_path, 'w', encoding='utf-8') as fw:
         for ex in processed_examples:
             fw.write(json.dumps(ex) + '\n')
-        print("Save {} processed examples into {} over!".format(len(processed_examples), processed_path))
+        print("Save {} processed examples into {} over!".format(
+            len(processed_examples), processed_path))
 
     problem_file = os.path.join(data_abs_dir, f"humaneval-{lang}.jsonl")
     from human_eval.evaluation import evaluate_functional_correctness
@@ -116,12 +131,15 @@ def evaluation_only(args):
     )
     print(lang, result)
 
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--model', type=str, help="model name or path")
-    parser.add_argument('--output_path', type=str, help="output path of your generation")
+    parser.add_argument('--output_path', type=str,
+                        help="output path of your generation")
     parser.add_argument('--language', type=str, help="langauge")
-    parser.add_argument('--temp_dir', type=str, help="temp dir for evaluation", default="tmp")
+    parser.add_argument('--temp_dir', type=str,
+                        help="temp dir for evaluation", default="tmp")
     args = parser.parse_args()
 
     os.environ["TOKENIZERS_PARALLELISM"] = "false"
