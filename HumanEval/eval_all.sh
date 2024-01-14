@@ -8,5 +8,5 @@ for LANG in $LANGS; do
         --model "$MODEL" \
         --output_path "$OUPUT_DIR/${LANG}.jsonl" \
         --language $LANG \
-        --temp_dir $OUPUT_DIR
+        --temp_dir $OUPUT_DIR | tee "$OUPUT_DIR/${LANG}.log"
 done
