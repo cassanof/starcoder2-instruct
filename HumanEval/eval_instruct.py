@@ -34,23 +34,29 @@ def generate_one(example, lang, tokenizer, model):
     instr = build_instruction(
         languge_settings[lang]['full_name'], example['prompt'])
     prompt = format_prompt(instr)
-    inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
+    inputs = tokenizer.encode(prompt, return_tensors="pt").to(model.device)
 
     outputs = model.generate(
         inputs,
         max_new_tokens=1024,
         do_sample=False,
-        top_p=0.9,
-        temperature=0.2,
+        #top_p=0.9,
+        #temperature=0.2,
+        #do_sample=True,
         pad_token_id=tokenizer.pad_token_id,
         eos_token_id=tokenizer.eos_token_id,
     )
 
+    print("------ RAW --------")
+    print(tokenizer.decode(outputs[0]))
     output = tokenizer.decode(
         outputs[0][len(inputs[0]):], skip_special_tokens=True)
     example['output'] = output
 
-    return extract_generation_code(example, lang_code=lang)
+    ext = extract_generation_code(example, lang_code=lang)
+    print("------ EXTRACTED --------")
+    print(ext["generation"])
+    return ext
 
 
 def generate_main(args):
