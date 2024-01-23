@@ -19,5 +19,5 @@ do
       --model "$dir" \
       --output_path "$OUPUT_DIR/${BASENAME}-${LANG}.jsonl" \
       --language $LANG \
-      --temp_dir $OUPUT_DIR
+      --temp_dir $OUPUT_DIR | tee "$OUPUT_DIR/${BASENAME}-${LANG}.log"
 done
