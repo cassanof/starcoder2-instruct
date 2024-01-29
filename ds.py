@@ -17,19 +17,26 @@ def add_markdown_code_block(s: str, tag) -> str:
 
 # <ds getter> -> (<context block>, <instruction>, <code block>, <lang>)
 DATASETS = {
-    (lambda: datasets.load_dataset("nuprl/EditPackFT-Multi", split="train[:75000]")): (  # type: ignore
-        lambda x: add_markdown_code_block(x["old_contents"], tag=x["config"]),
-        lambda x: x["message"],
-        lambda x: add_markdown_code_block(x["new_contents"], tag=x["config"]),
-        lambda x: x["lang"],
-        "editpackft"
-    ),
+    #  (lambda: datasets.load_dataset("nuprl/EditPackFT-Multi", split="train[:75000]")): (  # type: ignore
+    #  lambda x: add_markdown_code_block(x["old_contents"], tag=x["config"]),
+    #  lambda x: x["message"],
+    #  lambda x: add_markdown_code_block(x["new_contents"], tag=x["config"]),
+    #  lambda x: x["lang"],
+    #  "editpackft"
+    #  ),
     (lambda: datasets.load_dataset("ise-uiuc/Magicoder-OSS-Instruct-75K", split="train")): (  # type: ignore
         lambda _: None,
         lambda x: x["problem"],
         lambda x: x["solution"],
         lambda x: x["lang"],
         "magicoder"
+    ),
+    (lambda: datasets.load_dataset("ise-uiuc/Magicoder-Evol-Instruct-110K", split="train")): (  # type: ignore
+        lambda _: None,
+        lambda x: x["instruction"],
+        lambda x: x["response"],
+        lambda _: "unknown",
+        "evol-instruct"
     ),
     # TODO: find a third dataset that has context that does something taht's not just "edit this code"
     # one candidate, but needs filtering: TokenBender/code_instructions_122k_alpaca_style
