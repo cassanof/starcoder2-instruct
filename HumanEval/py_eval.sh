@@ -2,12 +2,17 @@
 # usage: ./py_eval.sh <path to checkpoints>
 if [ -z "$1" ]
   then
-    echo "No argument supplied. usage: ./py_eval.sh <path to checkpoints>"
+    echo "No argument supplied. usage: ./py_eval.sh <path to checkpoints> <output>"
+    exit 1
+fi
+if [ -z "$2" ]
+  then
+    echo "No argument supplied. usage: ./py_eval.sh <path to checkpoints> <output>"
     exit 1
 fi
 
 LANG="python"
-OUPUT_DIR="output"
+OUPUT_DIR=$2
 CHECKPOINT_DIR=$1
 
 mkdir -p $OUPUT_DIR
