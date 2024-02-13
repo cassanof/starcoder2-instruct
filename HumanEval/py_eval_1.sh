@@ -15,6 +15,8 @@ LANG="python"
 OUPUT_DIR=$2
 MODEL=$1
 
+mkdir -p $OUPUT_DIR
+
 echo "Evaluating $MODEL"
 python eval_instruct.py \
     --model "$MODEL" \
