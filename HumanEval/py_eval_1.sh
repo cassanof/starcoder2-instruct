@@ -20,6 +20,6 @@ mkdir -p $OUPUT_DIR
 echo "Evaluating $MODEL"
 python eval_instruct.py \
     --model "$MODEL" \
-    --output_path "$OUPUT_DIR/${MODEL}-${LANG}.jsonl" \
+    --output_path "$OUPUT_DIR/model-${LANG}.jsonl" \
     --language $LANG \
-    --temp_dir $OUPUT_DIR | tee "$OUPUT_DIR/${MODEL}-${LANG}.log"
+    --temp_dir $OUPUT_DIR | tee "$OUPUT_DIR/model-${LANG}.log"
