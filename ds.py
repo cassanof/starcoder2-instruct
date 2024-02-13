@@ -24,14 +24,14 @@ DATASETS = {
     #  lambda x: x["lang"],
     #  "editpackft"
     #  ),
-    (lambda: datasets.load_dataset("ise-uiuc/Magicoder-OSS-Instruct-75K", split="train")): (  # type: ignore
+    (lambda: datasets.load_dataset("ise-uiuc/Magicoder-OSS-Instruct-74K-15Gram-Dedup", split="train")): (  # type: ignore
         lambda _: None,
-        lambda x: x["problem"],
-        lambda x: x["solution"],
+        lambda x: x["instruction"],
+        lambda x: x["response"],
         lambda x: x["lang"],
         "magicoder"
     ),
-    (lambda: datasets.load_dataset("ise-uiuc/Magicoder-Evol-Instruct-110K", split="train")): (  # type: ignore
+    (lambda: datasets.load_dataset("ise-uiuc/Magicoder-Evol-Instruct-104K-15Gram-Dedup", split="train")): (  # type: ignore
         lambda _: None,
         lambda x: x["instruction"],
         lambda x: x["response"],
