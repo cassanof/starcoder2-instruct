@@ -1,7 +1,9 @@
-OUPUT_DIR="output"
-MODEL="/home/cassano.f/finetuning-harness/model_starcoder2_magicoder/checkpoint-636"
+OUPUT_DIR="sc2_3b_output"
+MODEL="/home/cassano.f/finetuning-harness/model_starcoder2_3b_magicoder/checkpoint-1908"
 
-LANGS="python cpp java cs php ts js sh"
+LANGS="cpp ts js sh"
+
+mkdir -p $OUPUT_DIR
 
 for LANG in $LANGS; do
     CUDA_VISIBLE_DEVICES=0 python eval_instruct.py \
