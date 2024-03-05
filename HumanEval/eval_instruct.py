@@ -13,7 +13,7 @@ data_abs_dir = Path(__file__).parent / "data"
 
 def build_instruction(languge: str, question: str):
     return '''
-Please continue to complete the function. You are not allowed to modify the given code and do the completion only. Please return all completed function in a codeblock. Here is the given code to do completion:
+Please continue to complete the function. You are not allowed to modify the given code, and you are allowed to only complete it. Please return the completed function in a codeblock. Here is the given code to complete:
 ```{}
 {}
 ```
