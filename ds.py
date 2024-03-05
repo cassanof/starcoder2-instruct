@@ -24,18 +24,25 @@ DATASETS = {
     #  lambda x: x["lang"],
     #  "editpackft"
     #  ),
-    (lambda: datasets.load_dataset("ise-uiuc/Magicoder-OSS-Instruct-74K-15Gram-Dedup", split="train")): (  # type: ignore
+    #  (lambda: datasets.load_dataset("ise-uiuc/Magicoder-OSS-Instruct-74K-15Gram-Dedup", split="train")): (  # type: ignore
+    #  lambda _: None,
+    #  lambda x: x["instruction"],
+    #  lambda x: x["response"],
+    #  lambda x: x["lang"],
+    #  "magicoder"
+    #  ),
+    #  (lambda: datasets.load_dataset("ise-uiuc/Magicoder-Evol-Instruct-104K-15Gram-Dedup", split="train")): (  # type: ignore
+    #  lambda _: None,
+    #  lambda x: x["instruction"],
+    #  lambda x: x["response"],
+    #  lambda _: "unknown",
+    #  "evol-instruct"
+    #  ),
+    (lambda: datasets.load_dataset("bigcode/oss-instruct-sc2-150k", split="train")): (  # type: ignore
         lambda _: None,
-        lambda x: x["instruction"],
-        lambda x: x["response"],
-        lambda x: x["lang"],
-        "magicoder"
-    ),
-    (lambda: datasets.load_dataset("ise-uiuc/Magicoder-Evol-Instruct-104K-15Gram-Dedup", split="train")): (  # type: ignore
-        lambda _: None,
-        lambda x: x["instruction"],
-        lambda x: x["response"],
-        lambda _: "unknown",
+        lambda x: x["problem"],
+        lambda x: x["solution"],
+        lambda _: "python",
         "evol-instruct"
     ),
     # TODO: find a third dataset that has context that does something taht's not just "edit this code"
