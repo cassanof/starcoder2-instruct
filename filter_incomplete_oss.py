@@ -28,3 +28,4 @@ dataset = dataset.filter(
     filter_fn,
     num_proc=os.cpu_count(),
 )
+dataset.push_to_hub(args.push, private=True)
