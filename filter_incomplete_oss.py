@@ -4,7 +4,7 @@ import os
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--dataset', type=str, required=True)
-parser.add_argument('--push', action='store_true')
+parser.add_argument('--push', type=str, required=True)
 args = parser.parse_args()
 
 
