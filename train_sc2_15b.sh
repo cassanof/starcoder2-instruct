@@ -6,7 +6,6 @@ fi
 DS=$(realpath $1)
 export WANDB_PROJECT="sc2-instruct"
 export WANDB_NAME=$(basename $0 .sh)
-pushd ./finetuning-harness/
 python3 -m torch.distributed.launch \
         --nproc_per_node 8 \
         main.py \
@@ -30,4 +29,3 @@ python3 -m torch.distributed.launch \
         --eval_freq 0.0 \
         --perc_valid_set 0.0 \
         --save_total_limit 20
-popd
