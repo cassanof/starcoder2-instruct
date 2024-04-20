@@ -23,6 +23,7 @@ python3 -m torch.distributed.launch \
         --gradient_accumulation_steps 8 \
         --learning_rate 1e-5 \
         --num_warmup_steps 15 \
+        --attention_dropout 0.1 \
         --num_workers=$(expr $(nproc --all) - 4) \
         --no_fp16 \
         --bf16 \
