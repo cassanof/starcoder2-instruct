@@ -53,9 +53,8 @@ def generate_one(example, lang, tokenizer, model):
 
     print("------ RAW --------")
     output = tokenizer.decode(
-        outputs[0][len(inputs[0]):], skip_special_tokens=True)
-    output = f"""```{lang}
-{example['prompt']}{output}"""
+        outputs[0], skip_special_tokens=True)
+    output = output.split("# Response")[1].strip()
     print(output)
     example['output'] = output
 
