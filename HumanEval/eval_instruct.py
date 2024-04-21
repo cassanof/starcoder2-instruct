@@ -29,7 +29,7 @@ def format_prompt(instruction: str, prompt: str, lang: str) -> str:
     buf += response_header + "\n"
     buf += f"""Sure, here is the completed function:
 ```{lang.lower()}
-{prompt}"""
+{prompt}""".strip()
     return buf
 
 
