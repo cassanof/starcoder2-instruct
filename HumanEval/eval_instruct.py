@@ -20,29 +20,32 @@ Please continue to complete the function. You are not allowed to modify the give
 '''.strip().format(languge.lower(), question.strip())
 
 
-def format_prompt(instruction: str) -> str:
+def format_prompt(instruction: str, prompt: str, lang: str) -> str:
     instruction_header = "# Instruction"
     response_header = "# Response"
     buf = ""
     buf += instruction_header + "\n"
     buf += instruction + "\n"
     buf += response_header + "\n"
+    buf += f"""Sure, here is the completed function:
+```{lang}
+{prompt}"""
     return buf
 
 
 def generate_one(example, lang, tokenizer, model):
     instr = build_instruction(
         languge_settings[lang]['full_name'], example['prompt'])
-    prompt = format_prompt(instr)
+    prompt = format_prompt(instr, example['prompt'], lang)
     inputs = tokenizer.encode(prompt, return_tensors="pt").to(model.device)
 
     outputs = model.generate(
         inputs,
         max_new_tokens=1024,
         do_sample=False,
-        #top_p=0.9,
-        #temperature=0.2,
-        #do_sample=True,
+        # top_p=0.9,
+        # temperature=0.2,
+        # do_sample=True,
         pad_token_id=tokenizer.pad_token_id,
         eos_token_id=tokenizer.eos_token_id,
     )
