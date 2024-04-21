@@ -37,7 +37,7 @@ def generate_one(example, lang, tokenizer, model):
         languge_settings[lang]['full_name'], example['prompt'])
     prompt = format_prompt(
         instr, example['prompt'], languge_settings[lang]['full_name'])
-    print(prompt)
+    print(f"'{prompt}'")
     inputs = tokenizer.encode(prompt, return_tensors="pt").to(model.device)
 
     outputs = model.generate(
