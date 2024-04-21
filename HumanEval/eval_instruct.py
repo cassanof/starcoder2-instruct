@@ -52,9 +52,11 @@ def generate_one(example, lang, tokenizer, model):
     )
 
     print("------ RAW --------")
-    print(tokenizer.decode(outputs[0]))
     output = tokenizer.decode(
         outputs[0][len(inputs[0]):], skip_special_tokens=True)
+    output = f"""```{lang}
+{prompt}{output}"""
+    print(output)
     example['output'] = output
 
     ext = extract_generation_code(example, lang_code=lang)
